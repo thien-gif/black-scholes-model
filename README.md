@@ -5,12 +5,12 @@ A Python implementation of the Black-Scholes-Merton model for pricing European c
 - Computes the Greeks: Delta, Gamma, Vega, and Theta
 - Plots option prices vs stock price using matplotlib
 ## Inputs
-Parameter
-S: Current stock price
-K: Strike price
-T: Time to expiry (in years)
-r: Risk-free interest rate
-sigma: volatility of the underlying asset
+Parameter:
+- S: Current stock price
+- K: Strike price
+- T: Time to expiry (in years)
+- r: Risk-free interest rate
+- sigma: volatility of the underlying asset
 ## How to run
 bash
 pip install numpy scipy matplotlib
