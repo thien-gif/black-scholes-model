@@ -49,60 +49,27 @@ def theta_put(S, K, T, r, sigma):
     term2 = r * K * np.exp(-r * T) * norm.cdf(-d2)
     return (term1 + term2) / 365
 
+def bs_price(S,K,T,r,sigma, option_type='call'):
+    if option_type == 'call':
+        return bs_call(S,K,T,r,sigma)
+    elif option_type == 'put':
+        return bs_put(S,K,T,r,sigma)
+    else:
+        raise ValueError("option_type must be 'call' or 'put'")
 
-
+#Newton's method, x_n+1 = x_n - f(x_n)/f'(x_n)
+def implied_volatility(market_price, S, K , T, r, option_type='call', tol=1e-6, max_iter=100):
+    sigma = 0.2 #initial guess, 20% is a reasonable starting point for most equities
+    for i in range(max_iter):
+        price = bs_price(S,K,T, r, sigma, option_type)
+        v = vega(S,K, T,r, sigma) #f'(x_n)
+        if abs(v)< 1e-10:
+            raise ValueError("Vega near Zero, Newton-Raphson unstable")
+        diff = price - market_price
+        if(abs(diff)< tol):
+            return sigma
+        sigma = sigma - diff / v
+    raise ValueError(f"did not converge after {max_iter} iterations")
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    # Example inputs
-    S = 100      # current stock price
-    K = 100      # strike price
-    T = 1        # time to expiry in years
-    r = 0.05     # risk-free rate
-    sigma = 0.2  # volatility
-
-    print("=" * 40)
-    print("   BLACK-SCHOLES OPTIONS PRICER")
-    print("=" * 40)
-    print(f"  Stock Price (S):   ${S}")
-    print(f"  Strike Price (K):  ${K}")
-    print(f"  Time to Expiry:    {T} year")
-    print(f"  Risk-Free Rate:    {r*100}%")
-    print(f"  Volatility:        {sigma*100}%")
-    print("=" * 40)
-
-    print("\n  PRICES")
-    print(f"  Call Price:  ${bs_call(S, K, T, r, sigma):.4f}")
-    print(f"  Put Price:   ${bs_put(S, K, T, r, sigma):.4f}")
-
-    print("\n  GREEKS")
-    print(f"  Delta (call):  {delta_call(S, K, T, r, sigma):.4f}")
-    print(f"  Delta (put):   {delta_put(S, K, T, r, sigma):.4f}")
-    print(f"  Gamma:         {gamma(S, K, T, r, sigma):.4f}")
-    print(f"  Vega:          {vega(S, K, T, r, sigma):.4f}")
-    print(f"  Theta (call):  {theta_call(S, K, T, r, sigma):.4f}")
-    print(f"  Theta (put):   {theta_put(S, K, T, r, sigma):.4f}")
-    print("=" * 40)
-
-    stock_prices = np.linspace(50, 150, 200)
-
-    call_prices = [bs_call(s, K, T, r, sigma) for s in stock_prices]
-    put_prices  = [bs_put(s, K, T, r, sigma)  for s in stock_prices]
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(stock_prices, call_prices, label="Call Price", color="blue")
-    plt.plot(stock_prices, put_prices,  label="Put Price",  color="red")
-
-    plt.axvline(x=K, color="gray", linestyle="--", label="Strike Price (K)")
-    plt.axhline(y=0, color="black", linestyle="-", linewidth=0.5)
-
-    plt.title("Black-Scholes Option Prices vs Stock Price")
-    plt.xlabel("Stock Price (S)")
-    plt.ylabel("Option Price")
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
-
-    print("Hello")
+    iv = implied_volatility(1.875, 21, 20, 0.25, 0.1, option_type='call')
+    print(f"Implied Volatility: {iv:.4f}")
