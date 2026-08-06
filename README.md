@@ -26,5 +26,17 @@ two distinct volatility patterns emerged:
 
 These patterns confirm that implied volatility is not constant across strikes — a direct violation of BSM's assumption of constant volatility.
 
+## Volatility Surface
+
+`vol_surface.py` computes and visualizes the implied volatility surface for AAPL 
+across multiple strikes and expiration dates using live market data.
+
+The surface shows IV across three dimensions: strike price, time to expiry, and 
+implied volatility. IV is highest for short-dated, low-strike (deep ITM) options 
+and lowest near at-the-money strikes for longer-dated expirations — consistent 
+with the term structure and skew observed in AAPL options.
+
+![AAPL Volatility Surface](aapl_vol_surface.png)
+
 ## References
 - Hull, J. C. *Options, Futures, and Other Derivatives* (8th ed.), Chapters 14 & 18
