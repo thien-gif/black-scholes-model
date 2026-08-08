@@ -33,6 +33,8 @@ for exp_date in expirations:
     options = chain.calls
     for index, row in options.iterrows():
         K = row["strike"]
+        if K < 0.7 * S or K > 1.3 * S:  # moneyness filter
+            continue
         market_price = (row["ask"] + row["bid"])/2
         if market_price == 0:
             continue

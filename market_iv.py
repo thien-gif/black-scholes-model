@@ -26,6 +26,8 @@ def get_implied_vols(ticker_symbol, exp_date, r = 0.05, option_type= 'call'):
     ivs_list = []
     for index, row in options.iterrows():
         K = row["strike"]
+        if K < 0.7 * S or K > 1.3 * S:  # moneyness filter
+            continue
         market_price = (row["bid"] + row["ask"])/2
         if market_price == 0:
             continue
@@ -56,4 +58,6 @@ while(True):
         break
     except (ValueError, IndexError):
         print("Something went wrong. Please check your ticker, date format, or option type.")
+
+
  
