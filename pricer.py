@@ -70,6 +70,21 @@ def implied_volatility(market_price, S, K , T, r, option_type='call', tol=1e-6, 
             return sigma
         sigma = sigma - diff / v
     raise ValueError(f"did not converge after {max_iter} iterations")
+
+def pnl_approximation(S,K,T, r, sigma, delta_S, delta_sigma, option_type = 'call'):
+    g = gamma(S,K,T,r,sigma)
+    v = vega(S,K,T,r,sigma)
+    if (option_type == 'call'):
+        d = delta_call(S, K, T, r, sigma)
+    elif(option_type == 'put'):
+        d = delta_put(S, K, T, r, sigma)
+    pnl = d * delta_S + (g/2)*(delta_S)**2+ v*delta_sigma
+    return pnl
+
 if __name__ == "__main__":
-    iv = implied_volatility(1.875, 21, 20, 0.25, 0.1, option_type='call')
-    print(f"Implied Volatility: {iv:.4f}")
+    pnl = pnl_approximation(100, 100, 0.25, 0.05, 0.2, 5, 0.01)
+    print(f"Estimated P&L: {pnl:.4f}")
+
+
+
+    
